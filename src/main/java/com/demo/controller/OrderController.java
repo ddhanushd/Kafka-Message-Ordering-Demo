@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.event.OrderEvent;
+import com.demo.model.OrderStatus;
 import com.demo.producer.KafkaProducerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,28 @@ public class OrderController {
         producerService.sendWithKey(event);
 
         return ResponseEntity.ok("Event sent with key");
+    }
+
+    @PostMapping("/generate")
+    public String generate() {
+
+        for (int i = 1; i <= 100; i++) {
+
+            OrderEvent event = new OrderEvent();
+            event.setOrderId("ORD-" + (i % 5));
+            OrderStatus[] statuses = {
+                    OrderStatus.CREATED,
+                    OrderStatus.PAYMENT_COMPLETED,
+                    OrderStatus.PACKED,
+                    OrderStatus.SHIPPED
+            };
+
+            event.setStatus(statuses[i % statuses.length]);
+
+            producerService.sendWithKey(event);
+        }
+
+        return "Done";
     }
 
 
