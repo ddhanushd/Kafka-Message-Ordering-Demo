@@ -3,6 +3,7 @@ package com.demo.consumer;
 import com.demo.event.OrderEvent;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class OrderConsumer {
             topics = "orders",
             containerFactory = "batchFactory"
     )
-    public void consume(List<ConsumerRecord<String, OrderEvent>> records) {
+    public void consume(List<ConsumerRecord<String, OrderEvent>> records,
+                        Acknowledgment ack) {
 
         System.out.println("\n========== BATCH ==========");
         System.out.println("Batch Size : " + records.size());
@@ -48,6 +50,7 @@ public class OrderConsumer {
                     record.value().getStatus()
             );
         }
+        //ack.acknowledge();
     }
 
 }
