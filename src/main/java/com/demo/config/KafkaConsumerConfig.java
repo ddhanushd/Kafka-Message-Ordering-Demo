@@ -23,6 +23,9 @@ public class KafkaConsumerConfig {
         // Enable Batch Mode
         factory.setBatchListener(true);
 
+        // 2 consumer threads
+        factory.setConcurrency(2);
+
         // Enable Manual Acknowledgment
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);

@@ -43,8 +43,9 @@ public class OrderConsumer {
         for (ConsumerRecord<String, OrderEvent> record : records) {
 
             System.out.printf(
-                    "%tT Partition=%d Offset=%d Key=%s Status=%s%n",
+                    "%tT Thread=%s Partition=%d Offset=%d Key=%s Status=%s%n",
                     new java.util.Date(),
+                    Thread.currentThread().getName(),
                     record.partition(),
                     record.offset(),
                     record.key(),
