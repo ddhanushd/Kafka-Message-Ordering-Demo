@@ -43,12 +43,16 @@ public class OrderConsumer {
         for (ConsumerRecord<String, OrderEvent> record : records) {
 
             System.out.printf(
-                    "Partition=%d Offset=%d Key=%s Status=%s%n",
+                    "%tT Partition=%d Offset=%d Key=%s Status=%s%n",
+                    new java.util.Date(),
                     record.partition(),
                     record.offset(),
                     record.key(),
                     record.value().getStatus()
             );
+            if ("ORD-2".equals(record.key())) {
+                throw new RuntimeException("Payment Service Down!");
+            }
         }
         //ack.acknowledge();
     }
