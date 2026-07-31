@@ -1,27 +1,31 @@
 package com.demo.config;
 
+import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 public class KafkaErrorHandlerConfig {
     @Bean
-    public DefaultErrorHandler errorHandler() {
+    public DefaultErrorHandler errorHandler(
+            KafkaTemplate<String, Object> kafkaTemplate) {
 
-        FixedBackOff backOff = new FixedBackOff(2000L, 3);
+        DeadLetterPublishingRecoverer recoverer =
+                new DeadLetterPublishingRecoverer(
+                        kafkaTemplate,
+                        (record, ex) -> new TopicPartition(
+                                "orders-dlt",
+                                record.partition()
+                        )
+                );
 
         return new DefaultErrorHandler(
-                (record, ex) -> {
-                    System.out.printf(
-                            "Recovered -> Partition=%d Offset=%d Key=%s%n",
-                            record.partition(),
-                            record.offset(),
-                            record.key()
-                    );
-                },
-                backOff
+                recoverer,
+                new FixedBackOff(2000L, 3)
         );
     }
 }
