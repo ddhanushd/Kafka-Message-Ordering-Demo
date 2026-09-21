@@ -1,18 +1,24 @@
 spring:
-  Kafka:
+  kafka:
     bootstrap-servers: localhost:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      batch-size: 16384
+      properties:
+        linger.ms: 5
 
     consumer:
       group-id: order-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
       properties:
         spring.json.trusted.packages: "*"
         max.poll.records: 10
         enable-auto-commit: false
+
+logging:
+  level:
+    org.apache.kafka.clients.producer: DEBUG

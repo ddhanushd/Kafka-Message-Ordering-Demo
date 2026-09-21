@@ -54,6 +54,11 @@ public class OrderController {
         return "Done";
     }
 
+    @GetMapping("/orders/producer-metrics")
+    public void producerMetrics() {
+        producerService.printProducerMetrics();
+    }
+
 
 //    @PostMapping("/generate")
 //    public ResponseEntity<String> generateMessages(
