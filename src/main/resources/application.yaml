@@ -8,6 +8,7 @@ spring:
       batch-size: 16384
       properties:
         linger.ms: 5
+        compression.type: gzip
 
     consumer:
       group-id: order-group
