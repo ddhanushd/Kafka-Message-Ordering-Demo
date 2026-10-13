@@ -1,6 +1,7 @@
 package com.demo.consumer;
 
 import com.demo.event.OrderEvent;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -35,7 +36,20 @@ public class OrderConsumer {
             containerFactory = "batchFactory"
     )
     public void consume(List<ConsumerRecord<String, OrderEvent>> records,
-                        Acknowledgment ack) {
+                        Acknowledgment ack,
+                        Consumer<String, OrderEvent> consumer) {
+        // Print fetch metrics
+        consumer.metrics().forEach((name, metric) -> {
+            String metricName = name.name();
+
+            if (metricName.equals("fetch-latency-avg")
+                    || metricName.equals("fetch-latency-max")
+                    || metricName.equals("fetch-size-avg")) {
+
+                System.out.printf("%s = %s%n",
+                        metricName, metric.metricValue());
+            }
+        });
 
 //        try {
 //            Thread.sleep(15000);
@@ -59,12 +73,12 @@ public class OrderConsumer {
                     record.value().getStatus()
             );
 
-            if ("ORD-2".equals(record.key())) {
-                throw new RuntimeException("Payment Service Down!");
-            }
+//            if ("ORD-2".equals(record.key())) {
+//                throw new RuntimeException("Payment Service Down!");
+//            }
         }
 
-        // ack.acknowledge();
+         ack.acknowledge();
     }
 
 }
