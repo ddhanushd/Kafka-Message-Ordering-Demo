@@ -37,6 +37,13 @@ public class OrderConsumer {
     public void consume(List<ConsumerRecord<String, OrderEvent>> records,
                         Acknowledgment ack) {
 
+//        try {
+//            Thread.sleep(15000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            throw new RuntimeException(e);
+//        }
+
         System.out.println("\n========== BATCH ==========");
         System.out.println("Batch Size : " + records.size());
 
@@ -51,11 +58,13 @@ public class OrderConsumer {
                     record.key(),
                     record.value().getStatus()
             );
+
             if ("ORD-2".equals(record.key())) {
                 throw new RuntimeException("Payment Service Down!");
             }
         }
-        //ack.acknowledge();
+
+        // ack.acknowledge();
     }
 
 }
