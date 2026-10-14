@@ -68,4 +68,21 @@ public class KafkaProducerService {
 
         System.out.println("=== WITH KEY ===");
     }
+
+    public void sendTransaction(OrderEvent first, OrderEvent second) {
+        kafkaTemplate.executeInTransaction(operations -> {
+            operations.send("orders", first.getOrderId(), first);
+            operations.send("orders", second.getOrderId(), second);
+
+            return true;
+        });
+    }
+    public void sendAbortedTransaction(OrderEvent first, OrderEvent second) {
+        kafkaTemplate.executeInTransaction(operations -> {
+            operations.send("orders", first.getOrderId(), first);
+            operations.send("orders", second.getOrderId(), second);
+
+            throw new RuntimeException("Simulated transaction failure");
+        });
+    }
 }

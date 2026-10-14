@@ -6,6 +6,9 @@ import com.demo.producer.KafkaProducerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -58,6 +61,52 @@ public class OrderController {
     public void producerMetrics() {
         producerService.printProducerMetrics();
     }
+
+    @PostMapping("/transaction")
+    public String sendTransaction() {
+        OrderEvent first = new OrderEvent(
+                "ORD-TX-1",
+                OrderStatus.CREATED,
+                LocalDateTime.now().toString(),
+                UUID.randomUUID()
+        );
+
+        OrderEvent second = new OrderEvent(
+                "ORD-TX-2",
+                OrderStatus.PAYMENT_COMPLETED,
+                LocalDateTime.now().toString(),
+                UUID.randomUUID()
+        );
+
+        producerService.sendTransaction(first, second);
+
+        return "Transaction completed: 2 events sent";
+    }
+
+    @PostMapping("/transaction/abort")
+    public String abortTransaction() {
+        OrderEvent first = new OrderEvent(
+                "ORD-ABORT-1",
+                OrderStatus.CREATED,
+                LocalDateTime.now().toString(),
+                UUID.randomUUID()
+        );
+
+        OrderEvent second = new OrderEvent(
+                "ORD-ABORT-2",
+                OrderStatus.PAYMENT_COMPLETED,
+                LocalDateTime.now().toString(),
+                UUID.randomUUID()
+        );
+
+        try {
+            producerService.sendAbortedTransaction(first, second);
+            return "Unexpected: transaction completed";
+        } catch (RuntimeException ex) {
+            return "Transaction aborted as expected: " + ex.getMessage();
+        }
+    }
+
 
 
 //    @PostMapping("/generate")
