@@ -1,3 +1,4 @@
+
 spring:
   kafka:
     bootstrap-servers: localhost:9092
@@ -30,3 +31,13 @@ spring:
 logging:
   level:
     org.apache.kafka.clients.producer: DEBUG
+
+# Add this section at the bottom
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
