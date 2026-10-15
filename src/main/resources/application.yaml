@@ -11,6 +11,7 @@ spring:
       properties:
         linger.ms: 5
         compression.type: gzip
+        enable.idempotence: true
 
     consumer:
       group-id: order-group

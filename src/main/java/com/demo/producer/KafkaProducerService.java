@@ -60,11 +60,15 @@ public class KafkaProducerService {
         event.setEventId(UUID.randomUUID());
         event.setEventTime(LocalDateTime.now().toString());
 
-        kafkaTemplate.send(
-                "orders",
-                event.getOrderId(),
-                event
-        );
+        kafkaTemplate.executeInTransaction(operations -> {
+            operations.send(
+                    "orders",
+                    event.getOrderId(),
+                    event
+            );
+
+            return true;
+        });
 
         System.out.println("=== WITH KEY ===");
     }

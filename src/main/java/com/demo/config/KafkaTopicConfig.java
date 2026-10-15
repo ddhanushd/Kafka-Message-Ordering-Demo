@@ -15,4 +15,12 @@ public class KafkaTopicConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic processedOrdersTopic() {
+        return TopicBuilder.name("processed-orders")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }
